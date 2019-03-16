@@ -16,6 +16,25 @@ import java.util.GregorianCalendar;
 
 class simpleJDBC
 {
+	enum State {Start};
+	static State state = State.Start;
+	
+	public static void main(String args[]) throws SQLException
+	{
+		try {
+			switch(state) {
+			case Start:
+				break;
+			default:
+				break;
+			}
+		} catch (Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	// old stuff
+	
 	private static int randBetween(int start, int end) {
 		return start + (int)Math.round(Math.random() * (end - start));
 	}
@@ -36,7 +55,7 @@ class simpleJDBC
 		return area + "-" + first3 + "-" + last4;
 	}
 
-    public static void main ( String [ ] args ) throws SQLException
+    public static void sql_stuff() throws SQLException
     {
 		// Register the driver.  You must register the driver before you can use it.
 		try {
@@ -231,7 +250,7 @@ class simpleJDBC
 
 			// Your code to handle errors comes here;
 			// something more meaningful than a print would be good
-			System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+			System.out.println("Error Code: " + sqlCode + "  sqlState: " + sqlState);
 		}
 
 		// Finally but importantly close the statement and connection
