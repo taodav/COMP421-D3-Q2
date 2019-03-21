@@ -205,12 +205,51 @@ public class SelectSQL {
 
         return State.Start;
     }
+
     private void printBookAvail() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Who's the author of the book you're looking for? (leave blank to not specify)");
         String author = scanner.nextLine();
         System.out.println("What's the title of the book you're looking for? (leave blank to not specify)");
         String title = scanner.nextLine();
+
+        String selectBookAvail = "SELECT media.title AS TITLE, " +
+                "author.aname AS AUTHOR, copy.cid AS CID, " +
+                "copy.laddress AS ADDRESS, copy.sid AS SEC, " +
+                "copy.rental_status AS RSTAT" +
+                " FROM media, book, author, copy" +
+                " WHERE media.mid = book.mid AND author.aid = book.aid" +
+                " AND copy.mid = media.mid AND copy.rental_status = 1";
+
+        if (author.length() > 0) {
+            selectBookAvail += " AND author.aname = '" + author + "'";
+        }
+
+        if (title.length() > 0) {
+            selectBookAvail += " AND media.title = '" + title + "'";
+        }
+
+        try {
+            ResultSet rs = statement.executeQuery(selectBookAvail);
+            System.out.println("Here are the available copies we found:");
+            String[] booksHeader = {"title", "author", "cid", "address", "section", "rental_status"};
+            System.out.format("%20s%20s%20s%20s%20s%20s\n", booksHeader);
+            while (rs.next()) {
+                String section = String.valueOf(rs.getInt("SEC"));
+                String cid = String.valueOf(rs.getInt("CID"));
+                String address = rs.getString("ADDRESS");
+                String currentTitle = rs.getString("TITLE");
+                String currentAuthor = rs.getString("AUTHOR");
+                String rentalStat = String.valueOf(rs.getInt("RSTAT"));
+
+                String[] row = {currentTitle, currentAuthor, cid, address, section, rentalStat};
+                System.out.format("%20s%20s%20s%20s%20s%20s\n", row);
+            }
+            System.out.println();
+        }
+        catch (SQLException e) {
+            CustomSQLException.printSQLException(e);
+        }
     }
 
     private void printPeriodicalAvail() {
@@ -221,6 +260,47 @@ public class SelectSQL {
         String title = scanner.nextLine();
         System.out.println("What's the issue of the periodical you're looking for? (leave blank to not specify)");
         String issue = scanner.nextLine();
+
+        String selectPeriodicalAvail = "SELECT media.title AS TITLE, " +
+                "media.pname AS PUBNAME, periodical.issue AS ISSUE, copy.cid AS CID, " +
+                "copy.laddress AS ADDRESS, copy.sid AS SEC, " +
+                "copy.rental_status AS RSTAT" +
+                " FROM media, periodical, copy" +
+                " WHERE media.mid = periodical.mid" +
+                " AND copy.mid = media.mid AND copy.rental_status = 1";
+
+        if (publisher.length() > 0) {
+            selectPeriodicalAvail += " AND media.pname = '" + publisher + "'";
+        }
+        if (title.length() > 0) {
+            selectPeriodicalAvail += " AND media.title = '" + title + "'";
+        }
+        if (issue.length() > 0) {
+            selectPeriodicalAvail += " AND periodical.issue = " + issue;
+        }
+
+        try {
+            ResultSet rs = statement.executeQuery(selectPeriodicalAvail);
+            System.out.println("Here are the available copies we found:");
+            String[] booksHeader = {"title", "publisher", "issue", "cid", "address", "section", "rental_status"};
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
+            while (rs.next()) {
+                String section = String.valueOf(rs.getInt("SEC"));
+                String cid = String.valueOf(rs.getInt("CID"));
+                String address = rs.getString("ADDRESS");
+                String currentTitle = rs.getString("TITLE");
+                String currentPublisher = rs.getString("PUBNAME");
+                String currentIssue = String.valueOf(rs.getInt("ISSUE"));
+                String rentalStat = String.valueOf(rs.getInt("RSTAT"));
+
+                String[] row = {currentTitle, currentPublisher, currentIssue, cid, address, section, rentalStat};
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+            }
+            System.out.println();
+        }
+        catch (SQLException e) {
+            CustomSQLException.printSQLException(e);
+        }
     }
 
     public State checkSection() {
