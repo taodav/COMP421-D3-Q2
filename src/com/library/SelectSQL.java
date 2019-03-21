@@ -1,5 +1,7 @@
 package com.library;
 
+import javax.sql.rowset.*;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -311,16 +313,16 @@ public class SelectSQL {
             String id = scanner.nextLine();
 
             String selectLoans = "SELECT person.id AS ID, person.name AS PNAME," +
-                    " media.title AS TITLE, media.mid AS MID" +
+                    " media.title AS TITLE, media.mid AS MID," +
                     " copy.cid AS CID, loan.loan_period AS LPERIOD," +
-                    " copy.rental_status AS RSTAT" +
+                    " loan.active AS ACTIVE, copy.rental_status AS RSTAT" +
                     " FROM media, copy, person, loan" +
                     " WHERE media.mid = copy.mid AND loan.pid = person.id" +
                     " AND copy.mid = media.mid AND loan.mid = media.mid" +
                     " AND loan.cid = copy.cid";
 
             String selectHolds = "SELECT person.id AS ID, person.name AS PNAME," +
-                    " media.title AS TITLE, media.mid AS MID" +
+                    " media.title AS TITLE, media.mid AS MID," +
                     " copy.cid AS CID, hold.hold_period AS HPERIOD," +
                     " copy.rental_status AS RSTAT" +
                     " FROM media, copy, person, hold" +
@@ -329,48 +331,57 @@ public class SelectSQL {
                     " AND hold.cid = copy.cid";
 
             if (id.length() > 0) {
-                selectLoans = " AND person.id = " + id;
-                selectHolds = " AND person.id = " + id;
+                selectLoans += " AND person.id = " + id;
+                selectHolds += " AND person.id = " + id;
 
             }
 
             selectLoans += " ORDER BY loan.loan_period";
+            selectHolds += " ORDER BY hold.hold_period";
+
 
             try {
-                ResultSet rs = statement.executeQuery(selectLoans);
+                ResultSet rsLoans = statement.executeQuery(selectLoans);
+                CachedRowSet crsLoans = RowSetProvider.newFactory().createCachedRowSet();
+                crsLoans.populate(rsLoans);
                 System.out.println("Here are the loans we found, ordered by due date:");
-                String[] booksHeader = {"id", "name", "title", "mid", "cid", "loan_period", "rental_status"};
+                String[] booksHeader = {"id", "name", "title", "mid", "cid", "loan_period", "active", "rental_status"};
                 System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
-                while (rs.next()) {
-                    String currentId = String.valueOf(rs.getInt("ID"));
-                    String currentName = rs.getString("PNAME")
-                    String cid = String.valueOf(rs.getInt("CID"));
-                    String mid = String.valueOf(rs.getInt("MID"));
-                    String currentTitle = rs.getString("TITLE");
-                    String rentalStat = String.valueOf(rs.getInt("RSTAT"));
-                    String loan_period = String.valueOf(rs.getDate("LPERIOD"));
+                while (crsLoans.next()) {
+                    String currentId = String.valueOf(crsLoans.getInt("ID"));
+                    String active = String.valueOf(crsLoans.getBoolean("ACTIVE"));
+                    String currentName = crsLoans.getString("PNAME");
+                    String cid = String.valueOf(crsLoans.getInt("CID"));
+                    String mid = String.valueOf(crsLoans.getInt("MID"));
+                    String currentTitle = crsLoans.getString("TITLE");
+                    String rentalStat = String.valueOf(crsLoans.getInt("RSTAT"));
+                    String loan_period = String.valueOf(crsLoans.getDate("LPERIOD"));
 
-                    String[] row = {currentId, currentName, currentTitle, mid, cid, loan_period, rentalStat};
-                    System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+                    String[] row = {currentId, currentName, currentTitle, mid, cid, loan_period, active, rentalStat};
+                    System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", row);
                 }
+
                 System.out.println();
 
                 ResultSet rsHolds = statement.executeQuery(selectHolds);
+                CachedRowSet crsHolds = RowSetProvider.newFactory().createCachedRowSet();
+                crsHolds.populate(rsHolds);
                 System.out.println("Here are the holds we found, ordered by due date:");
                 String[] holdsHeader = {"id", "name", "title", "mid", "cid", "hold_period", "rental_status"};
                 System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", holdsHeader);
-                while (rsHolds.next()) {
-                    String currentId = String.valueOf(rs.getInt("ID"));
-                    String currentName = rs.getString("PNAME")
-                    String cid = String.valueOf(rs.getInt("CID"));
-                    String mid = String.valueOf(rs.getInt("MID"));
-                    String currentTitle = rs.getString("TITLE");
-                    String rentalStat = String.valueOf(rs.getInt("RSTAT"));
-                    String hold_period = String.valueOf(rs.getDate("HPERIOD"));
+                while (crsHolds.next()) {
+                    String currentId = String.valueOf(crsHolds.getInt("ID"));
+                    String currentName = crsHolds.getString("PNAME");
+                    String cid = String.valueOf(crsHolds.getInt("CID"));
+                    String mid = String.valueOf(crsHolds.getInt("MID"));
+                    String currentTitle = crsHolds.getString("TITLE");
+                    String rentalStat = String.valueOf(crsHolds.getInt("RSTAT"));
+                    String hold_period = String.valueOf(crsHolds.getDate("HPERIOD"));
 
                     String[] row = {currentId, currentName, currentTitle, mid, cid, hold_period, rentalStat};
                     System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
                 }
+
                 inner: while (true) {
                     System.out.println();
                     System.out.println("Would you like to filter these results by:");
@@ -379,16 +390,17 @@ public class SelectSQL {
                     System.out.println("3. Overdue loans\n");
                     System.out.println("4. Search another ID");
                     System.out.println("5. Back to main menu");
+                    System.out.print("> ");
 
                     switch (scanner.nextLine()) {
                         case "1":
-                            viewPreviouslyDue(rs, rsHolds);
+                            viewPreviouslyDue(crsLoans, crsHolds);
                             break;
                         case "2":
-                            viewCurrentlyDue(rs, rsHolds);
+                            viewCurrentlyDue(crsLoans, crsHolds);
                             break;
                         case "3":
-                            viewOverdue(rs);
+                            viewOverdue(crsLoans);
                             break;
                         case "4":
                             break inner;
@@ -403,21 +415,114 @@ public class SelectSQL {
             catch (SQLException e) {
                 CustomSQLException.printSQLException(e);
             }
-
         }
         return State.Start;
     }
 
-    private void viewPreviouslyDue(ResultSet rsLoans, ResultSet rsHolds) {
-
+    private interface CompareTodayCommand {
+        boolean execute(Date d1);
     }
 
-    private void viewCurrentlyDue(ResultSet rsLoans, ResultSet rsHolds) {
-
+    private class LargerEqTodayCommand implements CompareTodayCommand {
+        public boolean execute(Date d1) {
+            Date today = new Date();
+            System.out.println(today);
+            return d1.compareTo(today) >= 0;
+        }
     }
 
-    private void viewOverdue(ResultSet rsLoans) {
+    private class SmallerTodayCommand implements CompareTodayCommand {
+        public boolean execute(Date d1) {
+            Date today = new Date();
+            return d1.compareTo(today) < 0;
+        }
+    }
 
+    private void viewFiltered(CachedRowSet rsLoans, CachedRowSet rsHolds, CompareTodayCommand c1) {
+        try {
+            rsLoans.beforeFirst();
+            rsHolds.beforeFirst();
+            System.out.println("Loans with due dates before today");
+            String[] booksHeader = {"id", "name", "title", "mid", "cid", "loan_period", "active", "rental_status"};
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
+            while (rsLoans.next()) {
+                Date dateLoanPeriod = rsLoans.getDate("LPERIOD");
+                if (c1.execute(dateLoanPeriod)) continue;
+
+                String currentId = String.valueOf(rsLoans.getInt("ID"));
+                String active = String.valueOf(rsLoans.getBoolean("ACTIVE"));
+                String currentName = rsLoans.getString("PNAME");
+                String cid = String.valueOf(rsLoans.getInt("CID"));
+                String mid = String.valueOf(rsLoans.getInt("MID"));
+                String currentTitle = rsLoans.getString("TITLE");
+                String rentalStat = String.valueOf(rsLoans.getInt("RSTAT"));
+                String loan_period = String.valueOf(dateLoanPeriod);
+
+                String[] row = {currentId, currentName, currentTitle, mid, cid, loan_period, active, rentalStat};
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", row);
+            }
+
+            System.out.println("Holds with holding date before today");
+            String[] holdsHeader = {"id", "name", "title", "mid", "cid", "hold_period", "rental_status"};
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", holdsHeader);
+            while (rsHolds.next()) {
+                Date dateHoldPeriod = rsHolds.getDate("HPERIOD");
+                if (c1.execute(dateHoldPeriod)) continue;
+
+                String currentId = String.valueOf(rsHolds.getInt("ID"));
+                String currentName = rsHolds.getString("PNAME");
+                String cid = String.valueOf(rsHolds.getInt("CID"));
+                String mid = String.valueOf(rsHolds.getInt("MID"));
+                String currentTitle = rsHolds.getString("TITLE");
+                String rentalStat = String.valueOf(rsHolds.getInt("RSTAT"));
+                String hold_period = String.valueOf(dateHoldPeriod);
+
+                String[] row = {currentId, currentName, currentTitle, mid, cid, hold_period, rentalStat};
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+            }
+        }
+        catch (SQLException e) {
+            CustomSQLException.printSQLException(e);
+        }
+    }
+
+    private void viewPreviouslyDue(CachedRowSet rsLoans, CachedRowSet rsHolds) {
+        viewFiltered(rsLoans, rsHolds, new LargerEqTodayCommand());
+    }
+
+    private void viewCurrentlyDue(CachedRowSet rsLoans, CachedRowSet rsHolds) {
+        viewFiltered(rsLoans, rsHolds, new SmallerTodayCommand());
+    }
+
+    private void viewOverdue(CachedRowSet rsLoans) {
+        try {
+            rsLoans.beforeFirst();
+            Date today = new Date();
+            System.out.println("Loans with due dates before today");
+            String[] booksHeader = {"id", "name", "title", "mid", "cid", "loan_period", "active", "rental_status"};
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
+            while (rsLoans.next()) {
+                Date dateLoanPeriod = rsLoans.getDate("LPERIOD");
+                boolean activeBool = rsLoans.getBoolean("ACTIVE");
+                if (!activeBool || today.compareTo(dateLoanPeriod) <= 0) continue;
+
+                String currentId = String.valueOf(rsLoans.getInt("ID"));
+                String active = String.valueOf(activeBool);
+                String currentName = rsLoans.getString("PNAME");
+                String cid = String.valueOf(rsLoans.getInt("CID"));
+                String mid = String.valueOf(rsLoans.getInt("MID"));
+                String currentTitle = rsLoans.getString("TITLE");
+                String rentalStat = String.valueOf(rsLoans.getInt("RSTAT"));
+                String loan_period = String.valueOf(dateLoanPeriod);
+
+                String[] row = {currentId, currentName, currentTitle, mid, cid, loan_period, active, rentalStat};
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", row);
+            }
+
+        }
+        catch (SQLException e) {
+            CustomSQLException.printSQLException(e);
+        }
     }
 
 
