@@ -1,40 +1,13 @@
-/**
- * Make sure the Postgresql JDBC driver is in your classpath.
- * You can download the JDBC 4 driver from here if required.
- * https://jdbc.postgresql.org/download.html
- *
- * take care of the variables usernamestring and passwordstring to use 
- * appropriate database credentials before you compile !
- *
-**/
-
+import java.util.*;
 import java.sql.* ;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
 
-class simpleJDBC
+class ConsoleSQL
 {
-	enum State {Start};
-	static State state = State.Start;
-	
-	public static void main(String args[]) throws SQLException
-	{
-		try {
-			switch(state) {
-			case Start:
-				break;
-			default:
-				break;
-			}
-		} catch (Exception e){
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	// old stuff
-	
+
 	private static int randBetween(int start, int end) {
 		return start + (int)Math.round(Math.random() * (end - start));
 	}
@@ -57,24 +30,24 @@ class simpleJDBC
 
     public static void sql_stuff() throws SQLException
     {
-		// Register the driver.  You must register the driver before you can use it.
-		try {
-			DriverManager.registerDriver( new org.postgresql.Driver() ) ;
-		} catch (Exception cnfe){
-			System.out.println("Class not found");
-		}
-
-		// This is the url you must use for Postgresql.
-		//Note: This url may not valid now !
+//		// Register the driver.  You must register the driver before you can use it.
+//		try {
+//			DriverManager.registerDriver( new org.postgresql.Driver() ) ;
+//		} catch (Exception cnfe){
+//			System.out.println("Class not found");
+//		}
+//
+//		// This is the url you must use for Postgresql.
+//		//Note: This url may not valid now !
 		String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
 
 		String usernameString = "cs421g38";
 //		String passwordString = PASSWORD;
 		String passwordString = "Datamybase2";
-
+//
 		int sqlCode=0;      // Variable to hold SQLCODE
 		String sqlState="00000";  // Variable to hold SQLSTATE
-
+//
 		Connection con = DriverManager.getConnection(url, usernameString, passwordString);
 		Statement statement = con.createStatement( ) ;
 
