@@ -59,10 +59,13 @@ public class LibraryApp {
                 case Return_Copy:
                     break;
                 case View_Loans_Holds:
+                    state = SelectSQL.viewLoan(statement);
                     break;
                 case Check_Available:
+                    state = SelectSQL.checkAvailable(statement);
                     break;
                 case Check_Section:
+                    state = SelectSQL.checkSection(statement);
                     break;
                 default:
                     break;

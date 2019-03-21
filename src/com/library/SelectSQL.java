@@ -8,4 +8,12 @@ public class SelectSQL {
 
         return State.Start;
     }
+
+    public static State checkAvailable(Statement statement) {
+        return State.Start;
+    }
+
+    public static State checkSection(Statement statement) {
+        return State.Start;
+    }
 }
