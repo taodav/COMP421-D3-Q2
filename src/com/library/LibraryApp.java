@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.ResultSet;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -32,7 +33,8 @@ public class LibraryApp {
         String sqlState="00000";  // Variable to hold SQLSTATE
 
         Connection con = DriverManager.getConnection(url, usernameString, passwordString);
-        Statement statement = con.createStatement();
+        Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
         SelectSQL select = new SelectSQL(statement);
         UpdateSQL update = new UpdateSQL(statement);
 
@@ -67,6 +69,8 @@ public class LibraryApp {
                             case "5":
                                 state = State.View_Patron_Loans_Holds;
                                 break;
+                            case "6":
+                                return;
                             default:
                                 System.out.println("Invalid selection. Please try again");
                                 break;
