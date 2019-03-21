@@ -75,7 +75,7 @@ public class LibraryApp {
                     case Return_Copy:
                         break;
                     case View_Loans_Holds:
-                        state = select.viewLoan();
+                        state = select.viewLoansHolds();
                         break;
                     case Check_Available:
                         state = select.checkAvailable();
