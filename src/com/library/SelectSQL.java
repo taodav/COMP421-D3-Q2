@@ -184,7 +184,7 @@ public class SelectSQL {
     public State checkAvailable() {
         Scanner scanner = new Scanner(System.in);
         outer: while (true) {
-            System.out.println("Are you looking for a book or periodical?");
+            System.out.println("Are you looking for the availability of a book or periodical?");
             System.out.println("1. Book");
             System.out.println("2. Periodical");
             System.out.println("3. Go back\n");
@@ -303,7 +303,122 @@ public class SelectSQL {
         }
     }
 
-    public State checkSection() {
+    public State viewPatronLoanHolds() {
+        Scanner scanner = new Scanner(System.in);
+        outer: while (true) {
+            System.out.println("Please enter the user ID of the patron");
+            System.out.print("> ");
+            String id = scanner.nextLine();
+
+            String selectLoans = "SELECT person.id AS ID, person.name AS PNAME," +
+                    " media.title AS TITLE, media.mid AS MID" +
+                    " copy.cid AS CID, loan.loan_period AS LPERIOD," +
+                    " copy.rental_status AS RSTAT" +
+                    " FROM media, copy, person, loan" +
+                    " WHERE media.mid = copy.mid AND loan.pid = person.id" +
+                    " AND copy.mid = media.mid AND loan.mid = media.mid" +
+                    " AND loan.cid = copy.cid";
+
+            String selectHolds = "SELECT person.id AS ID, person.name AS PNAME," +
+                    " media.title AS TITLE, media.mid AS MID" +
+                    " copy.cid AS CID, hold.hold_period AS HPERIOD," +
+                    " copy.rental_status AS RSTAT" +
+                    " FROM media, copy, person, hold" +
+                    " WHERE media.mid = copy.mid AND hold.pid = person.id" +
+                    " AND copy.mid = media.mid AND hold.mid = media.mid" +
+                    " AND hold.cid = copy.cid";
+
+            if (id.length() > 0) {
+                selectLoans = " AND person.id = " + id;
+                selectHolds = " AND person.id = " + id;
+
+            }
+
+            selectLoans += " ORDER BY loan.loan_period";
+
+            try {
+                ResultSet rs = statement.executeQuery(selectLoans);
+                System.out.println("Here are the loans we found, ordered by due date:");
+                String[] booksHeader = {"id", "name", "title", "mid", "cid", "loan_period", "rental_status"};
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
+                while (rs.next()) {
+                    String currentId = String.valueOf(rs.getInt("ID"));
+                    String currentName = rs.getString("PNAME")
+                    String cid = String.valueOf(rs.getInt("CID"));
+                    String mid = String.valueOf(rs.getInt("MID"));
+                    String currentTitle = rs.getString("TITLE");
+                    String rentalStat = String.valueOf(rs.getInt("RSTAT"));
+                    String loan_period = String.valueOf(rs.getDate("LPERIOD"));
+
+                    String[] row = {currentId, currentName, currentTitle, mid, cid, loan_period, rentalStat};
+                    System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+                }
+                System.out.println();
+
+                ResultSet rsHolds = statement.executeQuery(selectHolds);
+                System.out.println("Here are the holds we found, ordered by due date:");
+                String[] holdsHeader = {"id", "name", "title", "mid", "cid", "hold_period", "rental_status"};
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", holdsHeader);
+                while (rsHolds.next()) {
+                    String currentId = String.valueOf(rs.getInt("ID"));
+                    String currentName = rs.getString("PNAME")
+                    String cid = String.valueOf(rs.getInt("CID"));
+                    String mid = String.valueOf(rs.getInt("MID"));
+                    String currentTitle = rs.getString("TITLE");
+                    String rentalStat = String.valueOf(rs.getInt("RSTAT"));
+                    String hold_period = String.valueOf(rs.getDate("HPERIOD"));
+
+                    String[] row = {currentId, currentName, currentTitle, mid, cid, hold_period, rentalStat};
+                    System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+                }
+                inner: while (true) {
+                    System.out.println();
+                    System.out.println("Would you like to filter these results by:");
+                    System.out.println("1. Previously due");
+                    System.out.println("2. Currently loaned out/on hold");
+                    System.out.println("3. Overdue loans\n");
+                    System.out.println("4. Search another ID");
+                    System.out.println("5. Back to main menu");
+
+                    switch (scanner.nextLine()) {
+                        case "1":
+                            viewPreviouslyDue(rs, rsHolds);
+                            break;
+                        case "2":
+                            viewCurrentlyDue(rs, rsHolds);
+                            break;
+                        case "3":
+                            viewOverdue(rs);
+                            break;
+                        case "4":
+                            break inner;
+                        case "5":
+                            break outer;
+                        default:
+                            System.out.println("Option unavailable. Please choose another option");
+                            break;
+                    }
+                }
+            }
+            catch (SQLException e) {
+                CustomSQLException.printSQLException(e);
+            }
+
+        }
         return State.Start;
     }
+
+    private void viewPreviouslyDue(ResultSet rsLoans, ResultSet rsHolds) {
+
+    }
+
+    private void viewCurrentlyDue(ResultSet rsLoans, ResultSet rsHolds) {
+
+    }
+
+    private void viewOverdue(ResultSet rsLoans) {
+
+    }
+
+
 }

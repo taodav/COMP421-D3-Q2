@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-enum State {Start, Loan_Copy, Return_Copy, View_Loans_Holds, Check_Available, Check_Section, Exit};
+enum State {Start, Loan_Copy, Return_Copy, View_Loans_Holds, Check_Available, View_Patron_Loans_Holds, Exit};
 
 public class LibraryApp {
     static private State state = State.Start;
@@ -44,7 +44,7 @@ public class LibraryApp {
                         System.out.println("2. Return a copy");
                         System.out.println("3. View the loans and holds of a Book/Periodical");
                         System.out.println("4. Check the availability of a Book/Periodical");
-                        System.out.println("5. Check the section of a Book/Periodical");
+                        System.out.println("5. Get the loans and holds of a Patron");
                         System.out.println("6. Exit\n");
                         System.out.print("> ");
 
@@ -63,7 +63,7 @@ public class LibraryApp {
                                 state = State.Check_Available;
                                 break;
                             case "5":
-                                state = State.Check_Section;
+                                state = State.View_Patron_Loans_Holds;
                                 break;
                             default:
                                 System.out.println("Invalid selection. Please try again");
@@ -80,8 +80,8 @@ public class LibraryApp {
                     case Check_Available:
                         state = select.checkAvailable();
                         break;
-                    case Check_Section:
-                        state = select.checkSection();
+                    case View_Patron_Loans_Holds:
+                        state = select.viewPatronLoanHolds();
                         break;
                     case Exit:
                         return;
