@@ -159,8 +159,6 @@ public class SelectSQL {
                 System.out.format("%15s%15s%15s%15s%15s%15s%15s\n", row);
             }
 
-            System.out.println("\nHere are the holds that we found:");
-
             rs = statement.executeQuery(selectHolds);
             System.out.println("Here are the loans that we found:");
             String[] holdsHeader = {"mid", "cid", "patron_name", "hold_period", "title", "author"};
@@ -426,7 +424,6 @@ public class SelectSQL {
     private class LargerEqTodayCommand implements CompareTodayCommand {
         public boolean execute(Date d1) {
             Date today = new Date();
-            System.out.println(today);
             return d1.compareTo(today) >= 0;
         }
     }

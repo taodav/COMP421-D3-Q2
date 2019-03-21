@@ -68,6 +68,8 @@ public class LibraryApp {
                             case "5":
                                 state = State.View_Patron_Loans_Holds;
                                 break;
+                            case "6":
+                                return;
                             default:
                                 System.out.println("Invalid selection. Please try again");
                                 break;
