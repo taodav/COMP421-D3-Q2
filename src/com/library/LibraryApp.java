@@ -8,6 +8,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 enum State {Start, Loan_Copy, Return_Copy, View_Loans_Holds, Check_Available, View_Patron_Loans_Holds, Exit};
+enum RentalStatus {Nothing, Available, OnLoan, OnHold};
 
 public class LibraryApp {
     static private State state = State.Start;
