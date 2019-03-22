@@ -39,7 +39,7 @@ public class LibraryApp {
         UpdateSQL update = new UpdateSQL(statement);
 
         System.out.println("Welcome to the Group 38 SQL Console 3000");
-        while (true) {
+        outer: while (true) {
             try {
                 switch (state) {
                     case Start:
@@ -92,7 +92,7 @@ public class LibraryApp {
                         state = select.viewPatronLoanHolds();
                         break;
                     case Exit:
-                        return;
+                        break outer;
                     default:
                         break;
                 }
@@ -100,6 +100,9 @@ public class LibraryApp {
                 System.out.println(e.getMessage());
             }
         }
+        statement.close();
+        con.close();
+
     }
 
 }
