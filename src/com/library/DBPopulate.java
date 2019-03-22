@@ -192,15 +192,25 @@ class DBPopulate
                 int cid = 1;
                 int pid = randBetween(1, numPatrons);
                 String date = randDate(1999, 2020);
-
+                boolean active = true;
+                try {
+                    Date dueDate = formatter.parse(date);
+                    if (today.compareTo(dueDate) > 0) {
+                        active = false;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 String insertHold = "WITH ret AS (SELECT copy.mid, copy.cid, person.id FROM copy, person " +
                         "WHERE copy.mid = " + i + " AND copy.cid = " + cid + " AND person.id = " + pid + ")" +
                         "INSERT INTO hold SELECT mid, cid, id, \'" + date + "\' FROM ret";
                 statement.executeUpdate(insertHold);
 
                 // Now we need to set our copy on hold
-                String updateCopy = "UPDATE copy SET rental_status = 2 WHERE mid = " + i + " AND cid = " + cid;
-                statement.executeUpdate(updateCopy);
+                if (active) {
+                    String updateCopy = "UPDATE copy SET rental_status = 2 WHERE mid = " + i + " AND cid = " + cid;
+                    statement.executeUpdate(updateCopy);
+                }
             }
             System.out.println("Holds added");
 
@@ -213,9 +223,8 @@ class DBPopulate
                 int lid = randBetween(numPatrons + 1, numPatrons + numLibrarians);
                 String date = randDate(1999, 2030);
                 boolean active = true;
-                Date dueDate;
                 try {
-                    dueDate = formatter.parse(date);
+                    Date dueDate = formatter.parse(date);
                     if (today.compareTo(dueDate) > 0 && randBetween(0, 2) > 1) {
                         active = false;
                     }
@@ -229,8 +238,10 @@ class DBPopulate
                 statement.executeUpdate(insertLoan);
 
                 // Now we need to set our copy on hold
-                String updateCopy = "UPDATE copy SET rental_status = 3 WHERE mid = " + i + " AND cid = " + cid;
-                statement.executeUpdate(updateCopy);
+                if (active) {
+                    String updateCopy = "UPDATE copy SET rental_status = 3 WHERE mid = " + i + " AND cid = " + cid;
+                    statement.executeUpdate(updateCopy);
+                }
 
             }
             System.out.println("Loans added");
