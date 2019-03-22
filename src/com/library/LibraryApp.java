@@ -9,7 +9,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 enum State {Start, Loan_Copy, Return_Copy, View_Loans_Holds, Check_Available, View_Patron_Loans_Holds, Exit};
-enum RentalStatus {Nothing, Available, OnLoan, OnHold};
+enum RentalStatus {Nothing, Available, OnHold, OnLoan};
 
 public class LibraryApp {
     static private State state = State.Start;
@@ -36,6 +36,7 @@ public class LibraryApp {
         Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
         SelectSQL select = new SelectSQL(statement);
+        UpdateSQL update = new UpdateSQL(statement);
 
         System.out.println("Welcome to the Group 38 SQL Console 3000");
         while (true) {
@@ -76,8 +77,10 @@ public class LibraryApp {
                         }
                         break;
                     case Loan_Copy:
+                    	state = update.createLoan();
                         break;
                     case Return_Copy:
+                    	state = update.returnLoan();
                         break;
                     case View_Loans_Holds:
                         state = select.viewLoansHolds();
