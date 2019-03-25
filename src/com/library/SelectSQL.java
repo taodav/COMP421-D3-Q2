@@ -43,10 +43,13 @@ public class SelectSQL {
     private void printPeriodicalLoansHolds() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Who's the publisher of the periodical you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String publisher = scanner.nextLine();
         System.out.println("What's the title of the periodical you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String title = scanner.nextLine();
         System.out.println("What's the issue of the periodical you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String issue = scanner.nextLine();
 
         String selectLoans = "SELECT loan.mid AS MID, loan.cid AS CID, pat.name AS PNAME, lp.name AS LNAME, loan.loan_period AS LPERIOD, media.title AS TITLE, periodical.issue AS ISSUE, publisher.pname AS PUBNAME" +
@@ -76,7 +79,7 @@ public class SelectSQL {
             ResultSet rs = statement.executeQuery(selectLoans);
             System.out.println("Here are the loans that we found:");
             String[] loansHeader = {"mid", "cid", "patron_name", "librarian_name", "loan_period", "title", "issue", "publisher"};
-            System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", loansHeader);
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) loansHeader);
             while (rs.next()) {
                 String mid = String.valueOf(rs.getInt("MID"));
                 String cid = String.valueOf(rs.getInt("CID"));
@@ -88,14 +91,16 @@ public class SelectSQL {
                 String currentPublisher = rs.getString("PUBNAME");
 
                 String[] row = {mid, cid, pname, librarian, loan_period, currentTitle, currentIssue, currentPublisher};
-                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", row);
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
             }
+
+            System.out.println();
 
             System.out.println("\nHere are the holds that we found:");
 
             rs = statement.executeQuery(selectHolds);
             String[] holdsHeader = {"mid", "cid", "patron_name", "hold_period", "title", "issue", "publisher"};
-            System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", holdsHeader);
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) holdsHeader);
             while (rs.next()) {
                 String mid = String.valueOf(rs.getInt("MID"));
                 String cid = String.valueOf(rs.getInt("CID"));
@@ -106,7 +111,7 @@ public class SelectSQL {
                 String currentPublisher = rs.getString("PNAME");
 
                 String[] row = {mid, cid, pname, loan_period, currentTitle, currentIssue, currentPublisher};
-                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
             }
             System.out.println();
         }
@@ -118,8 +123,10 @@ public class SelectSQL {
     private void printBookLoansHolds() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Who's the author of the book you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String author = scanner.nextLine();
         System.out.println("What's the title of the book you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String title = scanner.nextLine();
 
         String selectLoans = "SELECT loan.mid AS MID, loan.cid AS CID, pat.name AS PNAME, lp.name AS LNAME, loan.loan_period AS LPERIOD, media.title AS TITLE, author.aname AS AUTHOR" +
@@ -145,7 +152,7 @@ public class SelectSQL {
             ResultSet rs = statement.executeQuery(selectLoans);
             System.out.println("Here are the loans that we found:");
             String[] loansHeader = {"mid", "cid", "patron_name", "librarian_name", "loan_period", "title", "author"};
-            System.out.format("%15s%15s%15s%15s%15s%15s%15s\n", loansHeader);
+            System.out.format("%15s%15s%15s%15s%15s%15s%15s\n", (Object[]) loansHeader);
             while (rs.next()) {
                 String mid = String.valueOf(rs.getInt("MID"));
                 String cid = String.valueOf(rs.getInt("CID"));
@@ -156,13 +163,13 @@ public class SelectSQL {
                 String currentAuthor = rs.getString("AUTHOR");
 
                 String[] row = {mid, cid, pname, librarian, loan_period, currentTitle, currentAuthor};
-                System.out.format("%15s%15s%15s%15s%15s%15s%15s\n", row);
+                System.out.format("%15s%15s%15s%15s%15s%15s%15s\n", (Object[]) row);
             }
-
+            System.out.println();
             rs = statement.executeQuery(selectHolds);
-            System.out.println("Here are the loans that we found:");
+            System.out.println("Here are the holds that we found:");
             String[] holdsHeader = {"mid", "cid", "patron_name", "hold_period", "title", "author"};
-            System.out.format("%15s%15s%15s%15s%15s%15s\n", holdsHeader);
+            System.out.format("%15s%15s%15s%15s%15s%15s\n", (Object[]) holdsHeader);
             while (rs.next()) {
                 String mid = String.valueOf(rs.getInt("MID"));
                 String cid = String.valueOf(rs.getInt("CID"));
@@ -172,7 +179,7 @@ public class SelectSQL {
                 String currentAuthor = rs.getString("AUTHOR");
 
                 String[] row = {mid, cid, pname, loan_period, currentTitle, currentAuthor};
-                System.out.format("%15s%15s%15s%15s%15s%15s\n", row);
+                System.out.format("%15s%15s%15s%15s%15s%15s\n", (Object[]) row);
             }
             System.out.println();
         }
@@ -209,8 +216,10 @@ public class SelectSQL {
     private void printBookAvail() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Who's the author of the book you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String author = scanner.nextLine();
         System.out.println("What's the title of the book you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String title = scanner.nextLine();
 
         String selectBookAvail = "SELECT media.title AS TITLE, " +
@@ -233,7 +242,7 @@ public class SelectSQL {
             ResultSet rs = statement.executeQuery(selectBookAvail);
             System.out.println("Here are the available copies we found:");
             String[] booksHeader = {"title", "author", "cid", "address", "section", "rental_status"};
-            System.out.format("%20s%20s%20s%20s%20s%20s\n", booksHeader);
+            System.out.format("%20s%20s%20s%20s%20s%20s\n", (Object[]) booksHeader);
             while (rs.next()) {
                 String section = String.valueOf(rs.getInt("SEC"));
                 String cid = String.valueOf(rs.getInt("CID"));
@@ -243,7 +252,7 @@ public class SelectSQL {
                 String rentalStat = String.valueOf(rs.getInt("RSTAT"));
 
                 String[] row = {currentTitle, currentAuthor, cid, address, section, rentalStat};
-                System.out.format("%20s%20s%20s%20s%20s%20s\n", row);
+                System.out.format("%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
             }
             System.out.println();
         }
@@ -255,10 +264,13 @@ public class SelectSQL {
     private void printPeriodicalAvail() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Who's the publisher of the periodical you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String publisher = scanner.nextLine();
         System.out.println("What's the title of the periodical you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String title = scanner.nextLine();
         System.out.println("What's the issue of the periodical you're looking for? (leave blank to not specify)");
+        System.out.print("> ");
         String issue = scanner.nextLine();
 
         String selectPeriodicalAvail = "SELECT media.title AS TITLE, " +
@@ -283,7 +295,7 @@ public class SelectSQL {
             ResultSet rs = statement.executeQuery(selectPeriodicalAvail);
             System.out.println("Here are the available copies we found:");
             String[] booksHeader = {"title", "publisher", "issue", "cid", "address", "section", "rental_status"};
-            System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) booksHeader);
             while (rs.next()) {
                 String section = String.valueOf(rs.getInt("SEC"));
                 String cid = String.valueOf(rs.getInt("CID"));
@@ -294,7 +306,7 @@ public class SelectSQL {
                 String rentalStat = String.valueOf(rs.getInt("RSTAT"));
 
                 String[] row = {currentTitle, currentPublisher, currentIssue, cid, address, section, rentalStat};
-                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
             }
             System.out.println();
         }
@@ -344,7 +356,7 @@ public class SelectSQL {
                 crsLoans.populate(rsLoans);
                 System.out.println("Here are the loans we found, ordered by due date:");
                 String[] booksHeader = {"id", "name", "title", "mid", "cid", "loan_period", "active", "rental_status"};
-                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) booksHeader);
                 while (crsLoans.next()) {
                     String currentId = String.valueOf(crsLoans.getInt("ID"));
                     String active = String.valueOf(crsLoans.getBoolean("ACTIVE"));
@@ -356,7 +368,7 @@ public class SelectSQL {
                     String loan_period = String.valueOf(crsLoans.getDate("LPERIOD"));
 
                     String[] row = {currentId, currentName, currentTitle, mid, cid, loan_period, active, rentalStat};
-                    System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", row);
+                    System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
                 }
 
                 System.out.println();
@@ -366,7 +378,7 @@ public class SelectSQL {
                 crsHolds.populate(rsHolds);
                 System.out.println("Here are the holds we found, ordered by due date:");
                 String[] holdsHeader = {"id", "name", "title", "mid", "cid", "hold_period", "rental_status"};
-                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", holdsHeader);
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) holdsHeader);
                 while (crsHolds.next()) {
                     String currentId = String.valueOf(crsHolds.getInt("ID"));
                     String currentName = crsHolds.getString("PNAME");
@@ -377,7 +389,7 @@ public class SelectSQL {
                     String hold_period = String.valueOf(crsHolds.getDate("HPERIOD"));
 
                     String[] row = {currentId, currentName, currentTitle, mid, cid, hold_period, rentalStat};
-                    System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+                    System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
                 }
 
                 inner: while (true) {
@@ -441,7 +453,7 @@ public class SelectSQL {
             rsHolds.beforeFirst();
             System.out.println("Loans with due dates before today");
             String[] booksHeader = {"id", "name", "title", "mid", "cid", "loan_period", "active", "rental_status"};
-            System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) booksHeader);
             while (rsLoans.next()) {
                 Date dateLoanPeriod = rsLoans.getDate("LPERIOD");
                 if (c1.execute(dateLoanPeriod)) continue;
@@ -456,12 +468,12 @@ public class SelectSQL {
                 String loan_period = String.valueOf(dateLoanPeriod);
 
                 String[] row = {currentId, currentName, currentTitle, mid, cid, loan_period, active, rentalStat};
-                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", row);
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
             }
 
             System.out.println("Holds with holding date before today");
             String[] holdsHeader = {"id", "name", "title", "mid", "cid", "hold_period", "rental_status"};
-            System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", holdsHeader);
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) holdsHeader);
             while (rsHolds.next()) {
                 Date dateHoldPeriod = rsHolds.getDate("HPERIOD");
                 if (c1.execute(dateHoldPeriod)) continue;
@@ -475,7 +487,7 @@ public class SelectSQL {
                 String hold_period = String.valueOf(dateHoldPeriod);
 
                 String[] row = {currentId, currentName, currentTitle, mid, cid, hold_period, rentalStat};
-                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", row);
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
             }
         }
         catch (SQLException e) {
@@ -497,7 +509,7 @@ public class SelectSQL {
             Date today = new Date();
             System.out.println("Loans with due dates before today");
             String[] booksHeader = {"id", "name", "title", "mid", "cid", "loan_period", "active", "rental_status"};
-            System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", booksHeader);
+            System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) booksHeader);
             while (rsLoans.next()) {
                 Date dateLoanPeriod = rsLoans.getDate("LPERIOD");
                 boolean activeBool = rsLoans.getBoolean("ACTIVE");
@@ -513,7 +525,7 @@ public class SelectSQL {
                 String loan_period = String.valueOf(dateLoanPeriod);
 
                 String[] row = {currentId, currentName, currentTitle, mid, cid, loan_period, active, rentalStat};
-                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", row);
+                System.out.format("%20s%20s%20s%20s%20s%20s%20s%20s\n", (Object[]) row);
             }
 
         }

@@ -147,8 +147,9 @@ class DBPopulate
             int numPeriodicals = 40;
 
             for (int i = 0; i < numPeriodicals; i++) {
-                String publisher = "publisher_" + randBetween(0, numPublishers - 1);
-                String title = "periodical_from_publisher_" + publisher + "_issue_" + i;
+                int rand = randBetween(0, numPublishers - 1);
+                String publisher = "publisher_" + rand;
+                String title = "pub_" + rand + "_issue_" + i;
 
                 String insertPeriodical = "WITH ret AS (INSERT INTO media VALUES (DEFAULT, \'" + title + "\', 1, \'" + publisher + "\') RETURNING mid)" +
                         "INSERT INTO periodical SELECT mid, "+ i + " FROM ret";
